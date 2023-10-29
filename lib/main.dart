@@ -14,7 +14,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -157,48 +156,81 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CustomScrollView(
-          slivers: <Widget>[
-            const SliverAppBar(
-              title: Text("Todo"),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          const SliverAppBar(
+            title: Text("Todo"),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                if (index == todos.length) {
+                  if (completedTodos.isEmpty) return Container();
+                  if (showCompletedTodos) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          child: const Text("Hide Completed Todos"),
+                          onPressed: () => setState(() {
+                            showCompletedTodos = false;
+                          }),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          child: const Text("Completed Todos"),
+                          onPressed: () => setState(() {
+                            showCompletedTodos = true;
+                          }),
+                        ),
+                      ],
+                    );
+                  }
+                }
+                return ListTile(
+                  title: Text(todos[index].title),
+                  subtitle: Text(todos[index].description),
+                  trailing: Checkbox(
+                    value: todos[index].isDone,
+                    onChanged: (value) {
+                      _finishTodo(
+                        index,
+                        todos[index].copyWith(
+                          isDone: value,
+                        ),
+                      );
+                    },
+                  ),
+                  onLongPress: () {
+                    _deleteTodo(
+                      index,
+                      todos[index],
+                      false,
+                    );
+                  },
+                );
+              },
+              childCount: todos.length + 1,
             ),
+          ),
+          if (showCompletedTodos)
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  if (index == todos.length) {
-                    if (completedTodos.isEmpty) return Container();
-                    if (showCompletedTodos) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextButton(
-                            child: const Text("Hide Completed Todos"),
-                            onPressed: () => setState(() {
-                              showCompletedTodos = false;
-                            }),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return TextButton(
-                        child: const Text("Completed Todos"),
-                        onPressed: () => setState(() {
-                          showCompletedTodos = true;
-                        }),
-                      );
-                    }
-                  }
                   return ListTile(
-                    title: Text(todos[index].title),
-                    subtitle: Text(todos[index].description),
+                    title: Text(completedTodos[index].title),
+                    subtitle: Text(completedTodos[index].description),
                     trailing: Checkbox(
-                      value: todos[index].isDone,
+                      value: completedTodos[index].isDone,
                       onChanged: (value) {
-                        _finishTodo(
+                        _unfinishTodo(
                           index,
-                          todos[index].copyWith(
+                          completedTodos[index].copyWith(
                             isDone: value,
                           ),
                         );
@@ -207,47 +239,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     onLongPress: () {
                       _deleteTodo(
                         index,
-                        todos[index],
-                        false,
+                        completedTodos[index],
+                        true,
                       );
                     },
                   );
                 },
-                childCount: todos.length + 1,
+                childCount: completedTodos.length,
               ),
             ),
-            if (showCompletedTodos)
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return ListTile(
-                      title: Text(completedTodos[index].title),
-                      subtitle: Text(completedTodos[index].description),
-                      trailing: Checkbox(
-                        value: completedTodos[index].isDone,
-                        onChanged: (value) {
-                          _unfinishTodo(
-                            index,
-                            completedTodos[index].copyWith(
-                              isDone: value,
-                            ),
-                          );
-                        },
-                      ),
-                      onLongPress: () {
-                        _deleteTodo(
-                          index,
-                          completedTodos[index],
-                          true,
-                        );
-                      },
-                    );
-                  },
-                  childCount: completedTodos.length,
-                ),
-              ),
-          ],
-        ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showTodoDialog,
