@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:todo/models/todo.dart';
+import 'package:todo/todo.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late SharedPreferences prefs;
   List<Todo> todos = [];
   List<Todo> completedTodos = [];
   bool showCompletedTodos = false;
@@ -39,12 +40,6 @@ class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
     _retrieveTodos();
-  }
-
-  @override
-  dispose() {
-    _saveLocally();
-    super.dispose();
   }
 
   void _addTodo(String title, String description) {
@@ -75,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _saveLocally() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     String todosJson = jsonEncode(todos.map((todo) => todo.toJson()).toList());
     String completedTodosJson =
         jsonEncode(completedTodos.map((todo) => todo.toJson()).toList());
@@ -84,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _retrieveTodos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     String todosJson = prefs.getString('todos') ?? '[]';
     String completedTodosJson = prefs.getString('completedTodos') ?? '[]';
     setState(() {
@@ -108,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _saveLocally();
   }
 
-  _showTodoDialog() {
+  void _todoDialog() {
     TextEditingController titleController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
     showDialog(
@@ -251,7 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showTodoDialog,
+        onPressed: _todoDialog,
         tooltip: 'Add Todo',
         child: const Icon(Icons.add),
       ),
