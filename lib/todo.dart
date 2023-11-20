@@ -2,26 +2,14 @@ import 'dart:convert';
 
 class Todo {
   final String title;
-  final String description;
+  final String? description;
   final bool isDone;
 
   Todo({
     required this.title,
-    required this.description,
-    required this.isDone,
+    this.description,
+    this.isDone = false,
   });
-
-  Todo copyWith({
-    String? title,
-    String? description,
-    bool? isDone,
-  }) {
-    return Todo(
-      title: title ?? this.title,
-      description: description ?? this.description,
-      isDone: isDone ?? this.isDone,
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -34,7 +22,7 @@ class Todo {
   factory Todo.fromMap(Map<String, dynamic> map) {
     return Todo(
       title: map['title'] ?? '',
-      description: map['description'] ?? '',
+      description: map['description'],
       isDone: map['isDone'] ?? false,
     );
   }
@@ -42,21 +30,4 @@ class Todo {
   String toJson() => json.encode(toMap());
 
   factory Todo.fromJson(String source) => Todo.fromMap(json.decode(source));
-
-  @override
-  String toString() =>
-      'Todo(title: $title, description: $description, isDone: $isDone)';
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Todo &&
-        other.title == title &&
-        other.description == description &&
-        other.isDone == isDone;
-  }
-
-  @override
-  int get hashCode => title.hashCode ^ description.hashCode ^ isDone.hashCode;
 }
