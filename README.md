@@ -1,6 +1,9 @@
-# [The Basics of Flutter](https://www.hungrimind.com/courses/flutter/basics)
+# Todo App built with Flutter
 
-Here lives the code for [The Basics of Flutter Course on Hungrimind](https://www.hungrimind.com/courses/flutter/basics). 
+This repo contains three important branches:
+1. `basic` the code for [The Basics of Flutter Course on Hungrimind](https://www.hungrimind.com/courses/flutter/basics)
+2. `expert` the code for Become a Flutter Expert Course on Hungrimind (in progress)
+3. `main` where the live code for the open source Todo App lives.
 
 ## How to Contribute
 This repo is open source, so that there is transparency into what you would learn, and that the code is up to date, and follows the best practices that are taught in the course. 
