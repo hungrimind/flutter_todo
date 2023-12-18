@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo/todo.dart';
+import 'package:todo/todo_state.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: const MyHomePage(),
+    home: const TodoStateHolder(child: MyHomePage()),
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       colorScheme: const ColorScheme.light(
@@ -24,33 +22,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late SharedPreferences prefs;
-  List<Todo> _todoList = [];
   bool showDone = false;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _retrieveTodos();
-  }
-
-  _retrieveTodos() async {
-    prefs = await SharedPreferences.getInstance();
-    final String? storedTodoList = prefs.getString('todoList');
-    if (storedTodoList != null) {
-      setState(() {
-        _todoList = (jsonDecode(storedTodoList) as List)
-            .map((todo) => Todo.fromJson(todo))
-            .toList();
-      });
-    }
-  }
-
-  _saveTodos() async {
-    await prefs.setString('todoList', jsonEncode(_todoList));
-  }
 
   @override
   void dispose() {
@@ -59,9 +33,9 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  void _addTodo() {
+  void _addTodo(BuildContext oldContext) {
     showDialog(
-      context: context,
+      context: oldContext,
       builder: (context) {
         return AlertDialog(
           title: const Text("Add Todo"),
@@ -85,16 +59,14 @@ class _MyHomePageState extends State<MyHomePage> {
           actions: [
             TextButton(
               onPressed: () {
-                setState(() {
-                  _todoList.add(Todo(
+                TodoStateHolder.of(oldContext).add(
+                  Todo(
                     title: _titleController.text,
                     description: _descriptionController.text,
-                  ));
-                });
-
+                  ),
+                );
                 _titleController.clear();
                 _descriptionController.clear();
-                _saveTodos();
                 Navigator.pop(context);
               },
               child: const Text("Add"),
@@ -105,31 +77,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _deleteTodo(int index) {
-    setState(() {
-      _todoList.removeAt(index);
-    });
-    _saveTodos();
-  }
-
-  void _updateTodo(int index, bool? value) {
-    setState(() {
-      _todoList[index] = Todo(
-        title: _todoList[index].title,
-        description: _todoList[index].description,
-        isDone: value!,
-      );
-    });
-    _saveTodos();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Todo"),
         actions: [
-          if (_todoList.where((element) => element.isDone).isNotEmpty)
+          if (TodoProvider.of(context)
+              .todoList
+              .where((element) => element.isDone)
+              .isNotEmpty)
             TextButton(
               onPressed: () {
                 setState(() {
@@ -143,27 +100,35 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: ListView.builder(
-          itemCount: _todoList.length,
+          itemCount: TodoProvider.of(context).todoList.length,
           itemBuilder: (context, index) {
-            if (_todoList[index].isDone && !showDone) return Container();
+            Todo currentTodo = TodoProvider.of(context).todoList[index];
+            if (currentTodo.isDone && !showDone) return Container();
             return ListTile(
-              title: Text(_todoList[index].title),
-              subtitle: _todoList[index].description != null
-                  ? Text(_todoList[index].description!)
+              title: Text(currentTodo.title),
+              subtitle: currentTodo.description != null
+                  ? Text(currentTodo.description!)
                   : null,
               trailing: Checkbox(
-                value: _todoList[index].isDone,
+                value: currentTodo.isDone,
                 onChanged: (bool? value) {
-                  _updateTodo(index, value);
+                  TodoStateHolder.of(context).update(
+                    index,
+                    Todo(
+                      title: currentTodo.title,
+                      description: currentTodo.description,
+                      isDone: value!,
+                    ),
+                  );
                 },
               ),
-              onLongPress: () => _deleteTodo(index),
+              onLongPress: () => TodoStateHolder.of(context).delete(index),
             );
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addTodo,
+        onPressed: () => _addTodo(context),
         child: const Icon(Icons.add),
       ),
     );
