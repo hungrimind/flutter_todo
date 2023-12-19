@@ -29,13 +29,6 @@ class UserStateHolderState extends State<UserStateHolder> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    //if user is already logged in, if not the function simply returns
-    setCurrentUser();
-  }
-
   void addUser() async {
     User? user = await AuthStateHolder.of(context).getCurrentUser();
     if (user == null) return;
@@ -43,15 +36,14 @@ class UserStateHolderState extends State<UserStateHolder> {
       'name': user.displayName,
       'email': user.email,
     });
-    setCurrentUser();
   }
 
-  void setCurrentUser() async {
+  Future<void> setCurrentUser() async {
     User? user = await AuthStateHolder.of(context).getCurrentUser();
     if (user == null) return;
     DocumentSnapshot documentSnapshot =
         await _firestore.collection('users').doc(user.uid).get();
-
+    if (!documentSnapshot.exists) throw ("User not in database");
     setState(() {
       _userState = UserState(
         name: documentSnapshot['name'],

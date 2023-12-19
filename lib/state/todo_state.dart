@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/models/todo.dart';
 
 class TodoStateHolder extends StatefulWidget {
   const TodoStateHolder({required this.child, Key? key}) : super(key: key);

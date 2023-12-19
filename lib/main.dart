@@ -16,7 +16,11 @@ void main() async {
   );
   runApp(
     const AuthStateHolder(
-      child: MainApp(),
+      child: UserStateHolder(
+        child: TodoStateHolder(
+          child: MainApp(),
+        ),
+      ),
     ),
   );
 }
@@ -34,22 +38,26 @@ class MainApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             User? user = snapshot.data;
-            return UserStateHolder(
-              child: user == null
-                  ? const SignIn()
-                  : Builder(builder: (context) {
-                      UserState? userState = UserProvider.of(context);
-                      return userState == null
-                          ? const Loading(
-                              text: "Loading User...",
-                            )
-                          : TodoStateHolder(
-                              child: MyHomePage(
+            return FutureBuilder(
+                future: UserStateHolder.of(context).setCurrentUser(),
+                builder: (context, snapshot) {
+                  if (snapshot.error != null) {
+                    return SignIn(
+                      error: snapshot.error,
+                    );
+                  } else {
+                    UserState? userState = UserProvider.of(context);
+                    return user == null
+                        ? const SignIn()
+                        : userState == null
+                            ? const Loading(
+                                text: "Loading User...",
+                              )
+                            : MyHomePage(
                                 user: userState.name ?? "Friend",
-                              ),
-                            );
-                    }),
-            );
+                              );
+                  }
+                });
           } else {
             return const CircularProgressIndicator();
           }

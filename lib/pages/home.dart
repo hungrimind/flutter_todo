@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:todo/models/todo.dart';
 import 'package:todo/state/auth_state.dart';
 import 'package:todo/state/todo_state.dart';
 import 'package:todo/state/user_state.dart';
-import 'package:todo/todo.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({required this.user, super.key});
