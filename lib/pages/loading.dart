@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 
 class Loading extends StatelessWidget {
-  const Loading({super.key});
+  const Loading({required this.text, super.key});
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Login Starter App"),
-            SizedBox(
+            Text(text),
+            const SizedBox(
               height: 20,
             ),
-            CircularProgressIndicator()
+            const CircularProgressIndicator()
           ],
         ),
       ),

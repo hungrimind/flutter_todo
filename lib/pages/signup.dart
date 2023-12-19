@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todo/auth_state.dart';
+import 'package:todo/state/auth_state.dart';
+import 'package:todo/state/user_state.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key, this.error});
@@ -121,7 +122,10 @@ class _SignUpState extends State<SignUp> {
                       try {
                         await AuthStateHolder.of(context).signUp(
                             emailController.text, passwordController.text);
-                        if (mounted) Navigator.pop(context);
+                        if (mounted) {
+                          UserStateHolder.of(context).addUser();
+                          Navigator.pop(context);
+                        }
                       } catch (e) {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(

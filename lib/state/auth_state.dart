@@ -59,6 +59,16 @@ class AuthStateHolderState extends State<AuthStateHolder> {
       throw ("Unknown issue occured.");
     }
   }
+
+  Future<User?> getCurrentUser() async {
+    try {
+      return _firebaseAuth.currentUser;
+    } on FirebaseAuthException catch (e) {
+      throw (e.message ?? 'Unknown issue occured.');
+    } catch (e) {
+      throw ("Unknown issue occured.");
+    }
+  }
 }
 
 class AuthenticationProvider extends InheritedWidget {

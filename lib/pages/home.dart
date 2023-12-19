@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:todo/auth_state.dart';
+import 'package:todo/state/auth_state.dart';
+import 'package:todo/state/todo_state.dart';
+import 'package:todo/state/user_state.dart';
 import 'package:todo/todo.dart';
-import 'package:todo/todo_state.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({required this.user, super.key});
@@ -73,14 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Hello, ${widget.user}!"),
-        leading: TextButton(
-          onPressed: () {
-            AuthStateHolder.of(context).signOut();
-          },
-          child: const Icon(
-            Icons.logout,
-          ),
-        ),
         actions: [
           if (TodoProvider.of(context)
               .todoList
@@ -94,7 +87,16 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child:
                   showDone ? const Text("Hide Done") : const Text("Show Done"),
-            )
+            ),
+          TextButton(
+            onPressed: () {
+              AuthStateHolder.of(context).signOut();
+              UserStateHolder.of(context).removeCurrentUser();
+            },
+            child: const Icon(
+              Icons.logout,
+            ),
+          ),
         ],
       ),
       body: Center(
