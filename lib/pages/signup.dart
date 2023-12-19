@@ -20,19 +20,6 @@ class _SignUpState extends State<SignUp> {
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.error != null) {
-        AuthStateHolder.of(context).signOut();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(widget.error.toString()),
-        ));
-      }
-    });
-  }
-
-  @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
