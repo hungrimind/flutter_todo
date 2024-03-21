@@ -54,7 +54,7 @@ class TodoListNotifier extends ValueNotifier<List<Todo>> {
 
   late SharedPreferences prefs;
 
-  void _initializeTodos() async {
+  Future<void> _initializeTodos() async {
     prefs = await SharedPreferences.getInstance();
     final String? storedTodoList = prefs.getString('todoList');
     if (storedTodoList != null) {
@@ -64,17 +64,21 @@ class TodoListNotifier extends ValueNotifier<List<Todo>> {
     }
   }
 
-  void add(Todo todo) async {
+  Future<void> _saveTodos() async {
+    await prefs.setString('todoList', jsonEncode(value));
+  }
+
+  Future<void> add(Todo todo) async {
     value = [...value, todo];
-    await prefs.setString('todoList', jsonEncode(value));
+    await _saveTodos();
   }
 
-  void remove(Todo todo) async {
+  Future<void> remove(Todo todo) async {
     value = value.where((element) => element != todo).toList();
-    await prefs.setString('todoList', jsonEncode(value));
+    await _saveTodos();
   }
 
-  void toggleDone(Todo todo) async {
+  Future<void> toggleDone(Todo todo) async {
     value = value.map((oldTodo) {
       if (oldTodo == todo) {
         return oldTodo.copyWith(isDone: !oldTodo.isDone);
@@ -82,6 +86,6 @@ class TodoListNotifier extends ValueNotifier<List<Todo>> {
       return oldTodo;
     }).toList();
 
-    await prefs.setString('todoList', jsonEncode(value));
+    await _saveTodos();
   }
 }
