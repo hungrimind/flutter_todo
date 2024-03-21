@@ -85,13 +85,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final todoListNotifier = Provider.of<TodoListNotifier>(context);
+    final todoList = todoListNotifier.value;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Todo"),
         actions: [
-          if (todoListNotifier.value
-              .where((element) => element.isDone)
-              .isNotEmpty)
+          if (todoList.where((element) => element.isDone).isNotEmpty)
             TextButton(
               onPressed: () {
                 setState(() {
@@ -105,23 +105,22 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: ListView.builder(
-          itemCount: todoListNotifier.value.length,
+          itemCount: todoList.length,
           itemBuilder: (context, index) {
-            if (todoListNotifier.value[index].isDone && !showDone) {
+            if (todoList[index].isDone && !showDone) {
               return Container();
             }
             return ListTile(
-              title: Text(todoListNotifier.value[index].title),
-              subtitle: todoListNotifier.value[index].description != null
-                  ? Text(todoListNotifier.value[index].description!)
+              title: Text(todoList[index].title),
+              subtitle: todoList[index].description != null
+                  ? Text(todoList[index].description!)
                   : null,
               trailing: Checkbox(
-                value: todoListNotifier.value[index].isDone,
+                value: todoList[index].isDone,
                 onChanged: (bool? value) =>
-                    todoListNotifier.toggleDone(todoListNotifier.value[index]),
+                    todoListNotifier.toggleDone(todoList[index]),
               ),
-              onLongPress: () =>
-                  todoListNotifier.remove(todoListNotifier.value[index]),
+              onLongPress: () => todoListNotifier.remove(todoList[index]),
             );
           },
         ),
