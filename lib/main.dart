@@ -4,18 +4,20 @@ import 'package:todo/todo.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(Provider(
-    notifier: TodoListNotifier([]),
-    child: MaterialApp(
-      home: const MyHomePage(),
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: const ColorScheme.light(
-          primary: Colors.black,
+  runApp(
+    Provider(
+      notifier: TodoListNotifier([]),
+      child: MaterialApp(
+        home: const MyHomePage(),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: const ColorScheme.light(
+            primary: Colors.black,
+          ),
         ),
       ),
     ),
-  ));
+  );
 }
 
 class MyHomePage extends StatefulWidget {
