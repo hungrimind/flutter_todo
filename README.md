@@ -1,6 +1,6 @@
 # Todo App built with Flutter
 
-This repo contains the code for [The Basics of Flutter Course on Hungrimind](https://www.hungrimind.com/courses/flutter/fundamentals)
+This repo contains the code for the [Flutter Fundamentals Course on Hungrimind](https://www.hungrimind.com/courses/flutter/fundamentals)
 
 
 ## How to Contribute
