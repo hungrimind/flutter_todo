@@ -48,7 +48,7 @@ class Todo {
 }
 
 class TodoListNotifier extends ValueNotifier<List<Todo>> {
-  TodoListNotifier(super.state) {
+  TodoListNotifier() : super([]) {
     _initializeTodos();
   }
 

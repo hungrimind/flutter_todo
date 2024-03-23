@@ -6,7 +6,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     Provider(
-      notifier: TodoListNotifier([]),
+      notifier: TodoListNotifier(),
       child: MaterialApp(
         home: const MyHomePage(),
         debugShowCheckedModeBanner: false,

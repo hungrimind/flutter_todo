@@ -1,7 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-/// ChangeNotifier is extending [Listenable] so by using that subclass this can
-/// also be reused for other [Listenable] classes.
 class Provider<T extends Listenable> extends InheritedNotifier<T> {
   const Provider({
     super.key,
