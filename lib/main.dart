@@ -1,10 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:todo/mvvm/reactive_view_model.dart';
 import 'package:todo/todo.dart';
 
-// app wide dependencies, consider using GetIt,
-// but doesn't matter much as we use constructor injection
+// app wide dependencies, consider using GetIt to override
+// dependencies in tests if wanted
 late final DateService dateService;
 
 void main() {
@@ -48,7 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    homePageViewModel.dispose();
     super.dispose();
   }
 
@@ -99,72 +97,86 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // we use [ChangeNotifierProvider.value] because we handle
-    // the creation, init and disposing of the viewmodel
-    // in theory we can skip this part but can be useful
-    // if have a child widget and need the viewmodel
-    return ChangeNotifierProvider.value(
-      value: homePageViewModel,
-      builder: (context, child) {
-        // consumer around the entire thing because in this case we don't care
-        // about optimizing rebuilds. Otherwise feel free to refactor and move consumer to a lower level widget
-        //
-        // If we are not using provider we can use ValueListneableBuilder
-        return Consumer<TodoPageViewModel>(
-          builder: (context, model, child) {
-            final todos = model.state.todos;
-
-            return Scaffold(
-              appBar: AppBar(
-                title: Text("Todo ${model.serviceDate}"),
-                actions: [
-                  if (model.state.hasNonCompletedTodos)
-                    TextButton(
-                      onPressed: () {
-                        model.toggleCompletedTodos();
-                      },
-                      child: model.state.showCompletedTodos
-                          ? const Text("Hide Done")
-                          : const Text("Show Done"),
-                    )
-                ],
-              ),
-              body: Center(
-                child: ListView.builder(
-                  itemCount: todos.length,
-                  itemBuilder: (context, index) {
-                    final todo = todos[index];
-                    if (todo.completed && !model.state.showCompletedTodos) {
-                      return const SizedBox();
-                    }
-                    return ListTile(
-                      title: Text(todo.title),
-                      subtitle: todo.description != null
-                          ? Text(todo.description!)
-                          : null,
-                      trailing: Checkbox(
-                        value: todo.completed,
-                        onChanged: (bool? value) => model.toggleDone(todo),
-                      ),
-                      onLongPress: () => model.remove(todo),
-                    );
+    return Scaffold(
+      appBar: AppBar(
+        title: ValueListenableBuilder(
+          valueListenable: homePageViewModel.serviceDate,
+          builder: (context, date, child) {
+            return Text("Todo $date");
+          },
+        ),
+        actions: [
+          ValueListenableBuilder2(
+            first: homePageViewModel.todos,
+            second: homePageViewModel.showCompletedTodos,
+            builder: (context, todos, showCompletedTodos, child) {
+              if (homePageViewModel.hasNonCompletedTodos) {
+                return TextButton(
+                  onPressed: () {
+                    homePageViewModel.toggleCompletedTodos();
                   },
-                ),
-              ),
-              floatingActionButton: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  FloatingActionButton(
-                    onPressed: model.updateServiceDate,
-                    child: const Icon(Icons.date_range),
-                  ),
-                  const SizedBox(width: 12),
-                  FloatingActionButton(
-                    onPressed: _addTodo,
-                    child: const Icon(Icons.add),
-                  ),
-                ],
-              ),
+                  child: showCompletedTodos
+                      ? const Text("Hide Done")
+                      : const Text("Show Done"),
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ],
+      ),
+      body: TodoList(
+        toggleDone: homePageViewModel.toggleDone,
+        removeTodo: homePageViewModel.remove,
+        todosNotifier: homePageViewModel.todos,
+        showCompletedTodos: homePageViewModel.showCompletedTodos,
+      ),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: homePageViewModel.updateServiceDate,
+            child: const Icon(Icons.date_range),
+          ),
+          const SizedBox(width: 12),
+          FloatingActionButton(
+            onPressed: _addTodo,
+            child: const Icon(Icons.add),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TodoList extends StatelessWidget {
+  const TodoList({
+    super.key,
+    required this.todosNotifier,
+    required this.showCompletedTodos,
+    required this.toggleDone,
+    required this.removeTodo,
+  });
+
+  final ValueNotifier<List<Todo>> todosNotifier;
+  final ValueNotifier<bool> showCompletedTodos;
+  final void Function(Todo todo) toggleDone;
+  final void Function(Todo todo) removeTodo;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: todosNotifier,
+      builder: (context, todos, child) {
+        return ListView.builder(
+          itemCount: todos.length,
+          itemBuilder: (context, index) {
+            final todo = todos[index];
+            return TodoItem(
+              showCompletedTodos: showCompletedTodos,
+              todo: todo,
+              toggleDone: toggleDone,
+              removeTodo: removeTodo,
             );
           },
         );
@@ -173,95 +185,165 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/// the state class to facilitate immutability
-@immutable
-class TodoPageState {
-  const TodoPageState({
-    required this.todos,
-    this.showCompletedTodos = false,
+class TodoItem extends StatelessWidget {
+  const TodoItem({
+    super.key,
+    required this.showCompletedTodos,
+    required this.todo,
+    required this.toggleDone,
+    required this.removeTodo,
   });
 
-  final List<Todo> todos;
-  final bool showCompletedTodos;
+  final ValueNotifier<bool> showCompletedTodos;
+  final Todo todo;
+  final void Function(Todo todo) toggleDone;
+  final void Function(Todo todo) removeTodo;
 
-  bool get hasNonCompletedTodos =>
-      todos.where((element) => element.completed).isNotEmpty;
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: showCompletedTodos,
+      builder: (context, showCompletedTodos, child) {
+        if (todo.completed && !showCompletedTodos) {
+          return const SizedBox();
+        }
 
-  TodoPageState copyWith({
-    List<Todo>? todos,
-    bool? showCompletedTodos,
-  }) {
-    return TodoPageState(
-      todos: todos ?? this.todos,
-      showCompletedTodos: showCompletedTodos ?? this.showCompletedTodos,
+        return ListTile(
+          title: Text(todo.title),
+          subtitle: todo.description != null ? Text(todo.description!) : null,
+          trailing: Checkbox(
+            value: todo.completed,
+            onChanged: (bool? value) => toggleDone(todo),
+          ),
+          onLongPress: () => removeTodo(todo),
+        );
+      },
     );
   }
 }
 
 /// the viewmodel which is responsible for business logic of the page
 /// this should be fully unit testable and dependencies should be constructor injected
-class TodoPageViewModel extends ReactiveViewModel {
+class TodoPageViewModel {
   TodoPageViewModel({required DateService dateService})
       : _dateService = dateService;
 
   final DateService _dateService;
+  ValueNotifier<DateTime> get serviceDate => _dateService.dateNotifier;
 
-  TodoPageState state = const TodoPageState(todos: []);
-  DateTime get serviceDate => _dateService.date;
+  final ValueNotifier<List<Todo>> todos = ValueNotifier([]);
+  final ValueNotifier<bool> showCompletedTodos = ValueNotifier(false);
+
+  bool get hasNonCompletedTodos =>
+      todos.value.where((element) => element.completed).isNotEmpty;
 
   /// showcase how you can initialize a viewmodel with async data
   Future<void> init() async {
     await Future.delayed(const Duration(seconds: 1));
-    state = state.copyWith(todos: [Todo(title: 'Created after 1 second')]);
-    notifyListeners();
+    todos.value = [Todo(title: 'Created after 1 second')];
   }
 
   Future<void> add(Todo todo) async {
-    state = state.copyWith(todos: [...state.todos, todo]);
-    notifyListeners();
+    todos.value = [...todos.value, todo];
   }
 
   Future<void> remove(Todo todo) async {
-    state = state.copyWith(
-      todos: state.todos.where((element) => element != todo).toList(),
-    );
-    notifyListeners();
+    todos.value = todos.value.where((element) => element != todo).toList();
   }
 
   Future<void> toggleDone(Todo todo) async {
-    state = state.copyWith(
-      todos: state.todos.map((oldTodo) {
-        // TADAS here you compare the entire object
-        // but do not override == and hashcode
-        // this can result in wrong objects being compared
-        if (oldTodo == todo) {
-          return oldTodo.copyWith(completed: !oldTodo.completed);
-        }
-        return oldTodo;
-      }).toList(),
-    );
-    notifyListeners();
+    todos.value = todos.value.map((oldTodo) {
+      // TADAS here you compare the entire object
+      // but do not override == and hashcode
+      // this can result in wrong objects being compared
+      if (oldTodo == todo) {
+        return oldTodo.copyWith(completed: !oldTodo.completed);
+      }
+      return oldTodo;
+    }).toList();
   }
 
   void toggleCompletedTodos() {
-    state = state.copyWith(showCompletedTodos: !state.showCompletedTodos);
-    notifyListeners();
+    showCompletedTodos.value = !showCompletedTodos.value;
   }
 
   void updateServiceDate() {
     _dateService.updateDate();
   }
-
-  // will notifyListeners whenever a service wants pages to update
-  @override
-  List<Listenable> get services => [_dateService];
 }
 
-class DateService extends ChangeNotifier {
-  DateTime date = DateTime.now();
+class DateService {
+  ValueNotifier<DateTime> dateNotifier = ValueNotifier(DateTime.now());
 
   void updateDate() {
-    date = DateTime.now();
-    notifyListeners();
+    dateNotifier.value = DateTime.now();
+  }
+}
+
+class ValueListenableBuilder2<A, B> extends StatelessWidget {
+  const ValueListenableBuilder2({
+    required this.first,
+    required this.second,
+    super.key,
+    required this.builder,
+    this.child,
+  });
+
+  final ValueListenable<A> first;
+  final ValueListenable<B> second;
+  final Widget? child;
+  final Widget Function(BuildContext context, A a, B b, Widget? child) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<A>(
+      valueListenable: first,
+      builder: (_, a, __) {
+        return ValueListenableBuilder<B>(
+          valueListenable: second,
+          builder: (context, b, __) {
+            return builder(context, a, b, child);
+          },
+        );
+      },
+    );
+  }
+}
+
+class ValueListenableBuilder3<A, B, C> extends StatelessWidget {
+  const ValueListenableBuilder3({
+    required this.first,
+    required this.second,
+    required this.third,
+    super.key,
+    required this.builder,
+    this.child,
+  });
+
+  final ValueListenable<A> first;
+  final ValueListenable<B> second;
+  final ValueListenable<C> third;
+  final Widget? child;
+  final Widget Function(BuildContext context, A a, B b, C c, Widget? child)
+      builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<A>(
+      valueListenable: first,
+      builder: (_, a, __) {
+        return ValueListenableBuilder<B>(
+          valueListenable: second,
+          builder: (context, b, __) {
+            return ValueListenableBuilder<C>(
+              valueListenable: third,
+              builder: (context, c, __) {
+                return builder(context, a, b, c, child);
+              },
+            );
+          },
+        );
+      },
+    );
   }
 }
