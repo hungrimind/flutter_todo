@@ -89,7 +89,6 @@ class TodoItem extends StatelessWidget {
 
         return ListTile(
           title: Text(todo.title),
-          subtitle: todo.description != null ? Text(todo.description!) : null,
           trailing: Checkbox(
             value: todo.completed,
             onChanged: (bool? value) => toggleDone(todo),

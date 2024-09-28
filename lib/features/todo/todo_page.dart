@@ -17,8 +17,7 @@ class _TodoPageState extends State<TodoPage> {
     todoRepository: todoRepository,
   );
 
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _todoController = TextEditingController();
 
   @override
   void initState() {
@@ -28,8 +27,7 @@ class _TodoPageState extends State<TodoPage> {
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
+    _todoController.dispose();
     homePageViewModel.dispose();
     super.dispose();
   }
@@ -44,15 +42,9 @@ class _TodoPageState extends State<TodoPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: _titleController,
+                controller: _todoController,
                 decoration: const InputDecoration(
-                  labelText: "Title",
-                ),
-              ),
-              TextField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: "Description",
+                  labelText: "Enter Todo",
                 ),
               ),
             ],
@@ -62,13 +54,11 @@ class _TodoPageState extends State<TodoPage> {
               onPressed: () {
                 homePageViewModel.add(
                   Todo(
-                    title: _titleController.text,
-                    description: _descriptionController.text,
+                    title: _todoController.text,
                   ),
                 );
 
-                _titleController.clear();
-                _descriptionController.clear();
+                _todoController.clear();
                 Navigator.pop(context);
               },
               child: const Text("Add"),
