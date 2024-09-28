@@ -1,27 +1,32 @@
-import 'package:flutter/foundation.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/features/todo/todo.dart';
+import 'package:todo/features/todo/todo_local_data_source.dart';
+import 'package:todo/shared/database/database.dart';
 
+// provide a uniform way for services and view models to interact with your data
 class TodoRepository {
-  TodoRepository();
+  TodoRepository({required TodoLocalDataSource todoLocalDataSource})
+      : _todoLocalDataSource = todoLocalDataSource;
 
-  // this should live in a server or local storage and we should provide a listenable approach to this item
-  // ValueNotifier here is just an example but most storage solutions and packages provide a reactive way to get data.
-  final ValueNotifier<List<Todo>> todos = ValueNotifier([]);
+  final TodoLocalDataSource _todoLocalDataSource;
 
-  void addTodo(Todo todo) {
-    todos.value = [...todos.value, todo];
+  Stream<List<Todo>> listenAll() {
+    return _todoLocalDataSource.listenAll().map((todos) {
+      return todos.map((todo) {
+        return todo.toTodo();
+      }).toList();
+    });
   }
 
-  void removeTodo(Todo todo) {
-    todos.value = todos.value.where((element) => element != todo).toList();
+  Future<void> addTodo({required String title}) async {
+    await _todoLocalDataSource.add(title);
   }
 
-  void toggleDone(Todo todo) {
-    todos.value = todos.value.map((oldTodo) {
-      if (oldTodo == todo) {
-        return oldTodo.copyWith(completed: !oldTodo.completed);
-      }
-      return oldTodo;
-    }).toList();
+  Future<void> removeTodo(Todo todo) async {
+    await _todoLocalDataSource.remove(todo.toEntity());
+  }
+
+  Future<void> toggleDone(Todo todo) async {
+    final toggledTodo = todo.copyWith(completed: !todo.completed);
+    await _todoLocalDataSource.update(toggledTodo.toEntity());
   }
 }

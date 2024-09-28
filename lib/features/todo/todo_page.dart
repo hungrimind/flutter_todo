@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:todo/features/todo/todo_page_view_model.dart';
+import 'package:todo/features/todo/todo_repository.dart';
 import 'package:todo/main.dart';
+import 'package:todo/shared/date_service.dart';
+import 'package:todo/shared/locator.dart';
 import 'package:todo/shared/ui_utilities/value_listenable_builder_x.dart';
-import 'package:todo/todo.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -13,8 +15,8 @@ class TodoPage extends StatefulWidget {
 
 class _TodoPageState extends State<TodoPage> {
   late final homePageViewModel = TodoPageViewModel(
-    dateService: dateService,
-    todoRepository: todoRepository,
+    dateService: locator<DateService>(),
+    todoRepository: locator<TodoRepository>(),
   );
 
   final TextEditingController _todoController = TextEditingController();
@@ -53,9 +55,7 @@ class _TodoPageState extends State<TodoPage> {
             TextButton(
               onPressed: () {
                 homePageViewModel.add(
-                  Todo(
-                    title: _todoController.text,
-                  ),
+                  title: _todoController.text,
                 );
 
                 _todoController.clear();
@@ -81,8 +81,8 @@ class _TodoPageState extends State<TodoPage> {
         ),
         actions: [
           ValueListenableBuilder2(
-            first: homePageViewModel.todos,
-            second: homePageViewModel.showCompletedTodos,
+            first: homePageViewModel.todosNotifier,
+            second: homePageViewModel.showCompletedTodosNotifier,
             builder: (context, todos, showCompletedTodos, child) {
               if (homePageViewModel.hasNonCompletedTodos) {
                 return TextButton(
@@ -102,8 +102,8 @@ class _TodoPageState extends State<TodoPage> {
       body: TodoList(
         toggleDone: homePageViewModel.toggleDone,
         removeTodo: homePageViewModel.remove,
-        todosNotifier: homePageViewModel.todos,
-        showCompletedTodos: homePageViewModel.showCompletedTodos,
+        todosNotifier: homePageViewModel.todosNotifier,
+        showCompletedTodos: homePageViewModel.showCompletedTodosNotifier,
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,

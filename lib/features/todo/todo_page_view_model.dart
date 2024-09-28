@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:todo/features/todo/todo.dart';
 import 'package:todo/features/todo/todo_repository.dart';
 import 'package:todo/shared/date_service.dart';
-import 'package:todo/todo.dart';
 
 /// the viewmodel which is responsible for business logic of the page
 /// this should be fully unit testable and dependencies should be constructor injected
@@ -19,22 +19,30 @@ class TodoPageViewModel {
 
   ValueNotifier<DateTime> get serviceDate => _dateService.dateNotifier;
 
-  final ValueNotifier<List<Todo>> todos = ValueNotifier([]);
-  final ValueNotifier<bool> showCompletedTodos = ValueNotifier(false);
+  final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
+  final ValueNotifier<bool> showCompletedTodosNotifier = ValueNotifier(false);
+
+  StreamSubscription<List<Todo>>? _subscription;
 
   bool get hasNonCompletedTodos =>
-      todos.value.where((element) => element.completed).isNotEmpty;
+      todosNotifier.value.where((element) => element.completed).isNotEmpty;
 
-  Future<void> init() async {
-    _todoRepository.todos.addListener(onTodosUpdate);
+  void init() {
+    _listenToTodos();
   }
 
-  void onTodosUpdate() {
-    todos.value = _todoRepository.todos.value;
+  void _listenToTodos() {
+    final stream = _todoRepository.listenAll();
+
+    _subscription = stream.listen(
+      (todos) {
+        todosNotifier.value = todos;
+      },
+    );
   }
 
-  Future<void> add(Todo todo) async {
-    _todoRepository.addTodo(todo);
+  Future<void> add({required String title}) async {
+    _todoRepository.addTodo(title: title);
   }
 
   Future<void> remove(Todo todo) async {
@@ -46,7 +54,7 @@ class TodoPageViewModel {
   }
 
   void toggleCompletedTodos() {
-    showCompletedTodos.value = !showCompletedTodos.value;
+    showCompletedTodosNotifier.value = !showCompletedTodosNotifier.value;
   }
 
   void updateServiceDate() {
@@ -54,6 +62,7 @@ class TodoPageViewModel {
   }
 
   void dispose() {
-    _todoRepository.todos.removeListener(onTodosUpdate);
+    _subscription?.cancel();
+    _subscription = null;
   }
 }

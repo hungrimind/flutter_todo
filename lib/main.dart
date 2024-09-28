@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:todo/features/todo/todo.dart';
 import 'package:todo/features/todo/todo_page.dart';
-import 'package:todo/features/todo/todo_repository.dart';
-import 'package:todo/shared/date_service.dart';
-import 'package:todo/todo.dart';
-
-// app wide dependencies, consider using GetIt to override
-// dependencies in tests.
-late final DateService dateService;
-late final TodoRepository todoRepository;
+import 'package:todo/shared/locator.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  dateService = DateService();
-  todoRepository = TodoRepository();
+  // initialize our service, repositories and other app wide classes
+  setupLocators();
 
   runApp(
     MaterialApp(
