@@ -20,7 +20,6 @@ class TodoPageViewModel {
   ValueNotifier<DateTime> get serviceDate => _dateService.dateNotifier;
 
   final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
-  final ValueNotifier<bool> showCompletedTodosNotifier = ValueNotifier(false);
 
   StreamSubscription<List<Todo>>? _subscription;
 
@@ -51,10 +50,6 @@ class TodoPageViewModel {
 
   Future<void> toggleDone(Todo todo) async {
     _todoRepository.toggleDone(todo);
-  }
-
-  void toggleCompletedTodos() {
-    showCompletedTodosNotifier.value = !showCompletedTodosNotifier.value;
   }
 
   void updateServiceDate() {

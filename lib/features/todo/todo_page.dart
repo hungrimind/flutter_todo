@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:todo/features/todo/todo_page_view_model.dart';
 import 'package:todo/features/todo/todo_repository.dart';
-import 'package:todo/main.dart';
 import 'package:todo/shared/date_service.dart';
 import 'package:todo/shared/locator.dart';
-import 'package:todo/shared/ui_utilities/value_listenable_builder_x.dart';
+
+import 'todo.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -79,31 +79,11 @@ class _TodoPageState extends State<TodoPage> {
             return Text("Todo $date");
           },
         ),
-        actions: [
-          ValueListenableBuilder2(
-            first: homePageViewModel.todosNotifier,
-            second: homePageViewModel.showCompletedTodosNotifier,
-            builder: (context, todos, showCompletedTodos, child) {
-              if (homePageViewModel.hasNonCompletedTodos) {
-                return TextButton(
-                  onPressed: () {
-                    homePageViewModel.toggleCompletedTodos();
-                  },
-                  child: showCompletedTodos
-                      ? const Text("Hide Done")
-                      : const Text("Show Done"),
-                );
-              }
-              return const SizedBox();
-            },
-          ),
-        ],
       ),
       body: TodoList(
         toggleDone: homePageViewModel.toggleDone,
         removeTodo: homePageViewModel.remove,
         todosNotifier: homePageViewModel.todosNotifier,
-        showCompletedTodos: homePageViewModel.showCompletedTodosNotifier,
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -119,6 +99,64 @@ class _TodoPageState extends State<TodoPage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class TodoList extends StatelessWidget {
+  const TodoList({
+    super.key,
+    required this.todosNotifier,
+    required this.toggleDone,
+    required this.removeTodo,
+  });
+
+  final ValueNotifier<List<Todo>> todosNotifier;
+  final void Function(Todo todo) toggleDone;
+  final void Function(Todo todo) removeTodo;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: todosNotifier,
+      builder: (context, todos, child) {
+        return ListView.builder(
+          itemCount: todos.length,
+          itemBuilder: (context, index) {
+            final todo = todos[index];
+            return TodoItem(
+              todo: todo,
+              toggleDone: toggleDone,
+              removeTodo: removeTodo,
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class TodoItem extends StatelessWidget {
+  const TodoItem({
+    super.key,
+    required this.todo,
+    required this.toggleDone,
+    required this.removeTodo,
+  });
+
+  final Todo todo;
+  final void Function(Todo todo) toggleDone;
+  final void Function(Todo todo) removeTodo;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(todo.title),
+      trailing: Checkbox(
+        value: todo.completed,
+        onChanged: (bool? value) => toggleDone(todo),
+      ),
+      onLongPress: () => removeTodo(todo),
     );
   }
 }
