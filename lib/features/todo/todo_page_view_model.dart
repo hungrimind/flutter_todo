@@ -22,23 +22,16 @@ class TodoPageViewModel {
   final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
   final ValueNotifier<bool> showCompletedTodosNotifier = ValueNotifier(false);
 
-  StreamSubscription<List<Todo>>? _subscription;
-
   bool get hasNonCompletedTodos =>
       todosNotifier.value.where((element) => element.completed).isNotEmpty;
 
   void init() {
-    _listenToTodos();
+    _todoRepository.addListener(_onUpdateTodos);
   }
 
-  void _listenToTodos() {
-    final stream = _todoRepository.listenAll();
-
-    _subscription = stream.listen(
-      (todos) {
-        todosNotifier.value = todos;
-      },
-    );
+  void _onUpdateTodos() {
+    todosNotifier.value =
+        _todoRepository.todos.map((entity) => entity.toTodo()).toList();
   }
 
   Future<void> add({required String title}) async {
@@ -62,7 +55,6 @@ class TodoPageViewModel {
   }
 
   void dispose() {
-    _subscription?.cancel();
-    _subscription = null;
+    _todoRepository.removeListener(_onUpdateTodos);
   }
 }

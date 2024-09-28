@@ -1,4 +1,4 @@
-import 'package:todo/shared/database/database.dart';
+import 'package:todo/features/todo/todo_entity.dart';
 
 class Todo {
   final String id;
