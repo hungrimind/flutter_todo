@@ -8,6 +8,8 @@ void setupLocators() {
   locator.registerLazySingleton<DateService>(() => DateService());
 
   locator.registerLazySingleton<TodoRepository>(
-    () => TodoRepository(),
+    () => TodoRepository(
+      fakeLocalDataSource: FakeLocalDataSource(),
+    ),
   );
 }
