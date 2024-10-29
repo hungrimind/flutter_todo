@@ -1,5 +1,3 @@
-import 'package:todo/features/todo/todo.dart';
-
 class TodoEntity {
   TodoEntity({
     required this.id,
@@ -11,11 +9,15 @@ class TodoEntity {
   final String title;
   final bool completed;
 
-  Todo toTodo() {
-    return Todo(
-      id: id,
-      title: title,
-      completed: completed,
+  TodoEntity copyWith({
+    String? id,
+    String? title,
+    bool? completed,
+  }) {
+    return TodoEntity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      completed: completed ?? this.completed,
     );
   }
 }

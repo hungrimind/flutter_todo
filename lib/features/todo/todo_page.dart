@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:todo/features/todo/todo_entity.dart';
 import 'package:todo/features/todo/todo_page_view_model.dart';
 import 'package:todo/features/todo/todo_repository.dart';
 import 'package:todo/shared/date_service.dart';
 import 'package:todo/shared/locator.dart';
 import 'package:todo/shared/ui_utilities/value_listenable_builder_x.dart';
-
-import 'todo.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -133,10 +132,10 @@ class TodoList extends StatelessWidget {
     required this.removeTodo,
   });
 
-  final ValueNotifier<List<Todo>> todosNotifier;
+  final ValueNotifier<List<TodoEntity>> todosNotifier;
   final ValueNotifier<bool> showCompletedTodos;
-  final void Function(Todo todo) toggleDone;
-  final void Function(Todo todo) removeTodo;
+  final void Function(TodoEntity todo) toggleDone;
+  final void Function(TodoEntity todo) removeTodo;
 
   @override
   Widget build(BuildContext context) {
@@ -170,9 +169,9 @@ class TodoItem extends StatelessWidget {
   });
 
   final ValueNotifier<bool> showCompletedTodos;
-  final Todo todo;
-  final void Function(Todo todo) toggleDone;
-  final void Function(Todo todo) removeTodo;
+  final TodoEntity todo;
+  final void Function(TodoEntity todo) toggleDone;
+  final void Function(TodoEntity todo) removeTodo;
 
   @override
   Widget build(BuildContext context) {
