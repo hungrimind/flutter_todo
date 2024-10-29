@@ -1,48 +1,46 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:todo/features/todo/todo_entity.dart';
-import 'package:todo/features/todo/todo_repository.dart';
 import 'package:todo/shared/date_service.dart';
+import 'package:uuid/uuid.dart';
+
+import 'todo.dart';
 
 /// the viewmodel which is responsible for business logic of the page
 /// this should be fully unit testable and dependencies should be constructor injected
 class TodoPageViewModel {
   TodoPageViewModel({
     required DateService dateService,
-    required TodoRepository todoRepository,
-  })  : _dateService = dateService,
-        _todoRepository = todoRepository;
+  }) : _dateService = dateService;
 
   final DateService _dateService;
-  final TodoRepository _todoRepository;
 
   ValueNotifier<DateTime> get serviceDate => _dateService.dateNotifier;
 
-  final ValueNotifier<List<TodoEntity>> todosNotifier = ValueNotifier([]);
+  final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
   final ValueNotifier<bool> showCompletedTodosNotifier = ValueNotifier(false);
-
-  StreamSubscription<List<TodoEntity>>? _subscription;
 
   bool get hasNonCompletedTodos =>
       todosNotifier.value.where((element) => element.completed).isNotEmpty;
 
-  void init() {
-    _subscription = _todoRepository.watch().listen((todos) {
-      todosNotifier.value = todos;
-    });
-  }
-
   Future<void> add({required String title}) async {
-    _todoRepository.addTodo(title: title);
+    todosNotifier.value = [
+      ...todosNotifier.value,
+      Todo(id: const Uuid().v4(), title: title),
+    ];
   }
 
-  Future<void> remove(TodoEntity todo) async {
-    _todoRepository.removeTodo(todo);
+  Future<void> remove(Todo todo) async {
+    todosNotifier.value =
+        todosNotifier.value.where((element) => element.id != todo.id).toList();
   }
 
-  Future<void> toggleDone(TodoEntity todo) async {
-    _todoRepository.toggleDone(todo);
+  Future<void> toggleDone(Todo todo) async {
+    todosNotifier.value = todosNotifier.value
+        .map((element) => element.id == todo.id
+            ? todo.copyWith(completed: !todo.completed)
+            : element)
+        .toList();
   }
 
   void toggleCompletedTodos() {
@@ -51,10 +49,5 @@ class TodoPageViewModel {
 
   void updateServiceDate() {
     _dateService.updateDate();
-  }
-
-  void dispose() {
-    _subscription?.cancel();
-    _subscription = null;
   }
 }

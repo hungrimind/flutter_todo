@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todo/features/todo/todo_entity.dart';
+import 'package:todo/features/todo/todo.dart';
 import 'package:todo/features/todo/todo_page_view_model.dart';
-import 'package:todo/features/todo/todo_repository.dart';
 import 'package:todo/shared/date_service.dart';
 import 'package:todo/shared/locator.dart';
 import 'package:todo/shared/ui_utilities/value_listenable_builder_x.dart';
@@ -16,7 +15,6 @@ class TodoPage extends StatefulWidget {
 class _TodoPageState extends State<TodoPage> {
   late final homePageViewModel = TodoPageViewModel(
     dateService: locator<DateService>(),
-    todoRepository: locator<TodoRepository>(),
   );
 
   final TextEditingController _todoController = TextEditingController();
@@ -24,13 +22,11 @@ class _TodoPageState extends State<TodoPage> {
   @override
   void initState() {
     super.initState();
-    homePageViewModel.init();
   }
 
   @override
   void dispose() {
     _todoController.dispose();
-    homePageViewModel.dispose();
     super.dispose();
   }
 
@@ -132,10 +128,10 @@ class TodoList extends StatelessWidget {
     required this.removeTodo,
   });
 
-  final ValueNotifier<List<TodoEntity>> todosNotifier;
+  final ValueNotifier<List<Todo>> todosNotifier;
   final ValueNotifier<bool> showCompletedTodos;
-  final void Function(TodoEntity todo) toggleDone;
-  final void Function(TodoEntity todo) removeTodo;
+  final void Function(Todo todo) toggleDone;
+  final void Function(Todo todo) removeTodo;
 
   @override
   Widget build(BuildContext context) {
@@ -169,9 +165,9 @@ class TodoItem extends StatelessWidget {
   });
 
   final ValueNotifier<bool> showCompletedTodos;
-  final TodoEntity todo;
-  final void Function(TodoEntity todo) toggleDone;
-  final void Function(TodoEntity todo) removeTodo;
+  final Todo todo;
+  final void Function(Todo todo) toggleDone;
+  final void Function(Todo todo) removeTodo;
 
   @override
   Widget build(BuildContext context) {
