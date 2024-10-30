@@ -62,13 +62,13 @@ class _TodoPageState extends State<TodoPage> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder3(
-      first: homePageViewModel.serviceDate,
+      first: homePageViewModel.dateNotifier,
       second: homePageViewModel.todosNotifier,
       third: homePageViewModel.showCompletedTodosNotifier,
       builder: (context, date, todos, showCompletedTodos, child) {
         return Scaffold(
           appBar: AppBar(
-            title: Text("Todo $date"),
+            title: Text("Time: ${date.millisecondsSinceEpoch}"),
             actions: [
               TextButton(
                 onPressed: () {
@@ -104,7 +104,7 @@ class _TodoPageState extends State<TodoPage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               FloatingActionButton(
-                onPressed: homePageViewModel.updateServiceDate,
+                onPressed: homePageViewModel.resetDate,
                 child: const Icon(Icons.date_range),
               ),
               const SizedBox(width: 12),

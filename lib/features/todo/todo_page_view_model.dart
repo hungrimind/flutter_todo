@@ -15,7 +15,7 @@ class TodoPageViewModel {
 
   final DateService _dateService;
 
-  ValueNotifier<DateTime> get serviceDate => _dateService.dateNotifier;
+  ValueNotifier<DateTime> get dateNotifier => _dateService.dateNotifier;
 
   final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
   final ValueNotifier<bool> showCompletedTodosNotifier = ValueNotifier(false);
@@ -47,7 +47,7 @@ class TodoPageViewModel {
     showCompletedTodosNotifier.value = !showCompletedTodosNotifier.value;
   }
 
-  void updateServiceDate() {
-    _dateService.updateDate();
+  void resetDate() {
+    _dateService.resetDate();
   }
 }
