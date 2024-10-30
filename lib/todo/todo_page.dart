@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:todo/features/todo/todo_page_view_model.dart';
-import 'package:todo/services/date_service.dart';
+import 'package:todo/date_service.dart';
+import 'package:todo/todo/todo_page_view_model.dart';
 import 'package:todo/utilities/locator.dart';
 import 'package:todo/utilities/value_listenable_builder_x.dart';
-
-import 'todo.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -14,17 +12,11 @@ class TodoPage extends StatefulWidget {
 }
 
 class _TodoPageState extends State<TodoPage> {
-  late final homePageViewModel = TodoPageViewModel(
+  late final todoPageViewModel = TodoPageViewModel(
     dateService: locator<DateService>(),
   );
 
   final TextEditingController _todoController = TextEditingController();
-
-  final todos = <Todo>[
-    Todo(id: "1", title: "Test"),
-    Todo(id: "2", title: "Test 2"),
-    Todo(id: "3", title: "Test 3"),
-  ];
 
   @override
   void dispose() {
@@ -46,7 +38,7 @@ class _TodoPageState extends State<TodoPage> {
           actions: [
             TextButton(
               onPressed: () {
-                homePageViewModel.add(
+                todoPageViewModel.add(
                   title: _todoController.text,
                 );
 
@@ -64,9 +56,9 @@ class _TodoPageState extends State<TodoPage> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder3(
-      first: homePageViewModel.dateNotifier,
-      second: homePageViewModel.todosNotifier,
-      third: homePageViewModel.showCompletedTodosNotifier,
+      first: todoPageViewModel.dateNotifier,
+      second: todoPageViewModel.todosNotifier,
+      third: todoPageViewModel.showCompletedTodosNotifier,
       builder: (context, date, todos, showCompletedTodos, child) {
         return Scaffold(
           appBar: AppBar(
@@ -74,7 +66,7 @@ class _TodoPageState extends State<TodoPage> {
             actions: [
               TextButton(
                 onPressed: () {
-                  homePageViewModel.toggleCompletedTodos();
+                  todoPageViewModel.toggleCompletedTodos();
                 },
                 child: showCompletedTodos
                     ? const Text("Hide Done")
@@ -96,9 +88,9 @@ class _TodoPageState extends State<TodoPage> {
                 trailing: Checkbox(
                   value: todo.completed,
                   onChanged: (bool? value) =>
-                      homePageViewModel.toggleDone(todo),
+                      todoPageViewModel.toggleDone(todo),
                 ),
-                onLongPress: () => homePageViewModel.remove(todo),
+                onLongPress: () => todoPageViewModel.remove(todo),
               );
             },
           ),
@@ -106,7 +98,7 @@ class _TodoPageState extends State<TodoPage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               FloatingActionButton(
-                onPressed: homePageViewModel.resetDate,
+                onPressed: todoPageViewModel.resetDate,
                 child: const Icon(Icons.date_range),
               ),
               const SizedBox(width: 12),
