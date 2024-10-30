@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/features/todo/todo_page_view_model.dart';
 import 'package:todo/shared/date_service.dart';
 import 'package:todo/shared/locator.dart';
+import 'package:todo/shared/ui_utilities/value_listenable_builder_x.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -65,82 +66,61 @@ class _TodoPageState extends State<TodoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: ValueListenableBuilder(
-          valueListenable: homePageViewModel.serviceDate,
-          builder: (context, date, child) {
-            return Text("Todo $date");
-          },
-        ),
-        actions: [
-          ValueListenableBuilder(
-            valueListenable: homePageViewModel.todosNotifier,
-            builder: (context, todos, child) {
-              if (homePageViewModel.hasNonCompletedTodos) {
-                return TextButton(
-                  onPressed: () {
-                    homePageViewModel.toggleCompletedTodos();
-                  },
-                  child: ValueListenableBuilder(
-                    valueListenable:
-                        homePageViewModel.showCompletedTodosNotifier,
-                    builder: (context, showCompletedTodos, child) {
-                      return showCompletedTodos
-                          ? const Text("Hide Done")
-                          : const Text("Show Done");
-                    },
-                  ),
-                );
-              }
-              return const SizedBox();
-            },
+    return ValueListenableBuilder3(
+      first: homePageViewModel.serviceDate,
+      second: homePageViewModel.todosNotifier,
+      third: homePageViewModel.showCompletedTodosNotifier,
+      builder: (context, date, todos, showCompletedTodos, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("Todo $date"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  homePageViewModel.toggleCompletedTodos();
+                },
+                child: showCompletedTodos
+                    ? const Text("Hide Done")
+                    : const Text("Show Done"),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: ValueListenableBuilder(
-        valueListenable: homePageViewModel.todosNotifier,
-        builder: (context, todos, child) {
-          return ListView.builder(
+          body: ListView.builder(
             itemCount: todos.length,
             itemBuilder: (context, index) {
               final todo = todos[index];
-              return ValueListenableBuilder(
-                valueListenable: homePageViewModel.showCompletedTodosNotifier,
-                builder: (context, showCompletedTodos, child) {
-                  if (todo.completed && !showCompletedTodos) {
-                    return const SizedBox();
-                  }
 
-                  return ListTile(
-                    title: Text(todo.title),
-                    trailing: Checkbox(
-                      value: todo.completed,
-                      onChanged: (bool? value) =>
-                          homePageViewModel.toggleDone(todo),
-                    ),
-                    onLongPress: () => homePageViewModel.remove(todo),
-                  );
-                },
+              if (todo.completed && !showCompletedTodos) {
+                return const SizedBox();
+              }
+
+              return ListTile(
+                title: Text(todo.title),
+                trailing: Checkbox(
+                  value: todo.completed,
+                  onChanged: (bool? value) =>
+                      homePageViewModel.toggleDone(todo),
+                ),
+                onLongPress: () => homePageViewModel.remove(todo),
               );
             },
-          );
-        },
-      ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: homePageViewModel.updateServiceDate,
-            child: const Icon(Icons.date_range),
           ),
-          const SizedBox(width: 12),
-          FloatingActionButton(
-            onPressed: _addTodo,
-            child: const Icon(Icons.add),
+          floatingActionButton: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                onPressed: homePageViewModel.updateServiceDate,
+                child: const Icon(Icons.date_range),
+              ),
+              const SizedBox(width: 12),
+              FloatingActionButton(
+                onPressed: _addTodo,
+                child: const Icon(Icons.add),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
