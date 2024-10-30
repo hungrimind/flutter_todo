@@ -19,11 +19,6 @@ class _TodoPageState extends State<TodoPage> {
   final TextEditingController _todoController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _todoController.dispose();
     super.dispose();
