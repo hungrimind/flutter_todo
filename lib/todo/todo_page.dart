@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todo/date_service.dart';
 import 'package:todo/todo/todo_page_view_model.dart';
-import 'package:todo/utilities/locator.dart';
-import 'package:todo/utilities/value_listenable_builder_x.dart';
+import 'package:todo/utils/locator.dart';
+import 'package:todo/utils/value_listenable_builder_x.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
