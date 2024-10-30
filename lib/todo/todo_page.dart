@@ -4,6 +4,8 @@ import 'package:todo/services/date_service.dart';
 import 'package:todo/utilities/locator.dart';
 import 'package:todo/utilities/value_listenable_builder_x.dart';
 
+import 'todo.dart';
+
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
 
@@ -17,6 +19,12 @@ class _TodoPageState extends State<TodoPage> {
   );
 
   final TextEditingController _todoController = TextEditingController();
+
+  final todos = <Todo>[
+    Todo(id: "1", title: "Test"),
+    Todo(id: "2", title: "Test 2"),
+    Todo(id: "3", title: "Test 3"),
+  ];
 
   @override
   void dispose() {

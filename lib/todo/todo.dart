@@ -14,8 +14,9 @@ class Todo {
     bool? completed,
   }) {
     return Todo(
-        id: id,
-        title: title ?? this.title,
-        completed: completed ?? this.completed);
+      id: id,
+      title: title ?? this.title,
+      completed: completed ?? this.completed,
+    );
   }
 }
