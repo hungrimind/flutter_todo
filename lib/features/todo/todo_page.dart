@@ -76,18 +76,23 @@ class _TodoPageState extends State<TodoPage> {
           },
         ),
         actions: [
-          ValueListenableBuilder2(
-            first: homePageViewModel.todosNotifier,
-            second: homePageViewModel.showCompletedTodosNotifier,
-            builder: (context, todos, showCompletedTodos, child) {
+          ValueListenableBuilder(
+            valueListenable: homePageViewModel.todosNotifier,
+            builder: (context, todos, child) {
               if (homePageViewModel.hasNonCompletedTodos) {
                 return TextButton(
                   onPressed: () {
                     homePageViewModel.toggleCompletedTodos();
                   },
-                  child: showCompletedTodos
-                      ? const Text("Hide Done")
-                      : const Text("Show Done"),
+                  child: ValueListenableBuilder(
+                    valueListenable:
+                        homePageViewModel.showCompletedTodosNotifier,
+                    builder: (context, showCompletedTodos, child) {
+                      return showCompletedTodos
+                          ? const Text("Hide Done")
+                          : const Text("Show Done");
+                    },
+                  ),
                 );
               }
               return const SizedBox();
