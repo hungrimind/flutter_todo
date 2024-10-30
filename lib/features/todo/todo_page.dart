@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todo/features/todo/todo_page_view_model.dart';
-import 'package:todo/shared/date_service.dart';
-import 'package:todo/shared/locator.dart';
-import 'package:todo/shared/ui_utilities/value_listenable_builder_x.dart';
+import 'package:todo/services/date_service.dart';
+import 'package:todo/utilities/locator.dart';
+import 'package:todo/utilities/value_listenable_builder_x.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -29,17 +29,11 @@ class _TodoPageState extends State<TodoPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Add Todo"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _todoController,
-                decoration: const InputDecoration(
-                  labelText: "Enter Todo",
-                ),
-              ),
-            ],
+          content: TextField(
+            controller: _todoController,
+            decoration: const InputDecoration(
+              labelText: "Enter Todo",
+            ),
           ),
           actions: [
             TextButton(

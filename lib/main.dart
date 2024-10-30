@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo/features/todo/todo_page.dart';
-import 'package:todo/shared/locator.dart';
+import 'package:todo/utilities/locator.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

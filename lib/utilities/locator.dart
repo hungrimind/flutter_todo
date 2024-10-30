@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:todo/shared/date_service.dart';
+import 'package:todo/services/date_service.dart';
 
 final locator = GetIt.instance;
 

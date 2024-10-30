@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:todo/shared/date_service.dart';
+import 'package:todo/services/date_service.dart';
 import 'package:uuid/uuid.dart';
 
 import 'todo.dart';
@@ -19,9 +19,6 @@ class TodoPageViewModel {
 
   final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
   final ValueNotifier<bool> showCompletedTodosNotifier = ValueNotifier(false);
-
-  bool get hasNonCompletedTodos =>
-      todosNotifier.value.where((element) => element.completed).isNotEmpty;
 
   Future<void> add({required String title}) async {
     todosNotifier.value = [
