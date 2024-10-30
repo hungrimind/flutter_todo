@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:todo/services/date_service.dart';
+import 'package:todo/date_service.dart';
 import 'package:uuid/uuid.dart';
 
 import 'todo.dart';
