@@ -1,7 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class DateService {
-  ValueNotifier<DateTime> dateNotifier = ValueNotifier(DateTime.now());
+  DateService();
+
+  final ValueNotifier<DateTime> dateNotifier = ValueNotifier(DateTime.now());
 
   void resetDate() {
     dateNotifier.value = DateTime.now();

@@ -1,17 +1,12 @@
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
-import 'package:todo/date_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_todo/date_service.dart';
 import 'package:uuid/uuid.dart';
 
 import 'todo.dart';
 
-/// the viewmodel which is responsible for business logic of the page
-/// this should be fully unit testable and dependencies should be constructor injected
 class TodoPageViewModel {
-  TodoPageViewModel({
-    required DateService dateService,
-  }) : _dateService = dateService;
+  TodoPageViewModel({required DateService dateService})
+      : _dateService = dateService;
 
   final DateService _dateService;
 
@@ -20,27 +15,25 @@ class TodoPageViewModel {
   final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
   final ValueNotifier<bool> showCompletedTodosNotifier = ValueNotifier(false);
 
-  Future<void> add({required String title}) async {
+  void add(String title) {
     todosNotifier.value = [
       ...todosNotifier.value,
-      Todo(id: const Uuid().v4(), title: title),
+      Todo(id: const Uuid().v4(), title: title, completed: false),
     ];
   }
 
-  Future<void> remove(Todo todo) async {
+  void remove(Todo todo) {
     todosNotifier.value =
-        todosNotifier.value.where((element) => element.id != todo.id).toList();
+        todosNotifier.value.where((t) => t.id != todo.id).toList();
   }
 
-  Future<void> toggleDone(Todo todo) async {
+  void toggleDone(Todo todo) {
     todosNotifier.value = todosNotifier.value
-        .map((element) => element.id == todo.id
-            ? todo.copyWith(completed: !todo.completed)
-            : element)
+        .map((t) => t.id == todo.id ? t.copyWith(completed: !t.completed) : t)
         .toList();
   }
 
-  void toggleCompletedTodos() {
+  void toggleShowCompletedTodos() {
     showCompletedTodosNotifier.value = !showCompletedTodosNotifier.value;
   }
 
