@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_todo/date_service.dart';
 import 'package:flutter_todo/utils/locator.dart';
+import 'package:flutter_todo/utils/valuelistenablebuilder3.dart';
 
 import 'todo_page_view_model.dart';
 
@@ -48,15 +49,13 @@ class _TodoPageState extends State<TodoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: _todoPageViewModel.showCompletedTodosNotifier,
-      builder: (context, showCompletedTodos, child) => Scaffold(
+    return ValueListenableBuilder3(
+      first: _todoPageViewModel.showCompletedTodosNotifier,
+      second: _todoPageViewModel.dateNotifier,
+      third: _todoPageViewModel.todosNotifier,
+      builder: (context, showCompletedTodos, date, todos, child) => Scaffold(
         appBar: AppBar(
-          title: ValueListenableBuilder(
-            valueListenable: _todoPageViewModel.dateNotifier,
-            builder: (context, date, child) =>
-                Text("Time: ${date.hour}:${date.minute}:${date.second}"),
-          ),
+          title: Text("Time: ${date.hour}:${date.minute}:${date.second}"),
           actions: [
             TextButton(
               onPressed: () {
@@ -66,31 +65,28 @@ class _TodoPageState extends State<TodoPage> {
             ),
           ],
         ),
-        body: ValueListenableBuilder(
-          valueListenable: _todoPageViewModel.todosNotifier,
-          builder: (context, todos, child) => ListView.builder(
-            itemCount: todos.length,
-            itemBuilder: (context, index) {
-              final todo = todos[index];
+        body: ListView.builder(
+          itemCount: todos.length,
+          itemBuilder: (context, index) {
+            final todo = todos[index];
 
-              if (!showCompletedTodos && todo.completed) {
-                return const SizedBox();
-              }
+            if (!showCompletedTodos && todo.completed) {
+              return const SizedBox();
+            }
 
-              return ListTile(
-                title: Text(todo.title),
-                trailing: Checkbox(
-                  value: todo.completed,
-                  onChanged: (value) {
-                    _todoPageViewModel.toggleDone(todo);
-                  },
-                ),
-                onLongPress: () {
-                  _todoPageViewModel.remove(todo);
+            return ListTile(
+              title: Text(todo.title),
+              trailing: Checkbox(
+                value: todo.completed,
+                onChanged: (value) {
+                  _todoPageViewModel.toggleDone(todo);
                 },
-              );
-            },
-          ),
+              ),
+              onLongPress: () {
+                _todoPageViewModel.remove(todo);
+              },
+            );
+          },
         ),
         floatingActionButton: Row(
           mainAxisAlignment: MainAxisAlignment.end,
