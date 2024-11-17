@@ -2,7 +2,7 @@
 
 This repo contains the code for the Todo Project on  [The Best Flutter Course on the Internet](https://www.hungrimind.com/learn/flutter)
 
-![Todo Project](https://www.hungrimind.com/todo-project.png)
+<img src="https://www.hungrimind.com/todo-project.png" alt="Todo Project" width="500"/>
 
 ## How to Contribute
 
