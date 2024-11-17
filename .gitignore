@@ -51,6 +51,5 @@ app.*.map.json
 /macos/**
 /windows/**
 /web/**
-/test/**
 pubspec.lock
 .metadata
