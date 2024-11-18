@@ -10,6 +10,10 @@ class TodoPage extends StatefulWidget {
 
   @override
   State<TodoPage> createState() => _TodoPageState();
+
+  static const todoFieldKey = ValueKey('todoFieldKey');
+  static const popupAddTodoKey = ValueKey('popupAddTodoKey');
+  static const toggleTodoKey = ValueKey('toggleTodoKey');
 }
 
 class _TodoPageState extends State<TodoPage> {
@@ -30,11 +34,13 @@ class _TodoPageState extends State<TodoPage> {
       context: context,
       builder: (context) => AlertDialog(
         content: TextField(
+          key: const ValueKey(TodoPage.todoFieldKey),
           controller: _todoController,
           decoration: const InputDecoration(labelText: "Enter Todo"),
         ),
         actions: [
           TextButton(
+            key: TodoPage.popupAddTodoKey,
             onPressed: () {
               _todoPageViewModel.add(_todoController.text);
               _todoController.clear();
@@ -58,6 +64,7 @@ class _TodoPageState extends State<TodoPage> {
           title: Text("Time: ${date.hour}:${date.minute}:${date.second}"),
           actions: [
             TextButton(
+              key: TodoPage.toggleTodoKey,
               onPressed: () {
                 _todoPageViewModel.toggleShowCompletedTodos();
               },
