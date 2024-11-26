@@ -19,21 +19,21 @@ void main() {
 
     testWidgets('full todo workflow test', (tester) async {
       await tester.pumpWidget(const MyApp());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Add first todo
       await tester.tap(find.byIcon(Icons.add));
-      await tester.pump();
+      await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'First Todo');
       await tester.tap(find.text('Add'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Add second todo
       await tester.tap(find.byIcon(Icons.add));
-      await tester.pump();
+      await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'Second Todo');
       await tester.tap(find.text('Add'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Verify both todos are visible
       expect(find.text('First Todo'), findsOneWidget);
@@ -41,7 +41,7 @@ void main() {
 
       // Complete first todo
       await tester.tap(find.byType(Checkbox).first);
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Verify only incomplete todo is visible
       expect(find.text('First Todo'), findsNothing);
@@ -49,7 +49,7 @@ void main() {
 
       // Show completed todos again
       await tester.tap(find.text('Show Done'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Verify both todos are visible again
       expect(find.text('First Todo'), findsOneWidget);
@@ -57,7 +57,7 @@ void main() {
 
       // Delete first todo using long press
       await tester.longPress(find.text('First Todo'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Verify first todo is deleted
       expect(find.text('First Todo'), findsNothing);
