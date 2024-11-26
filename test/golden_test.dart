@@ -45,12 +45,9 @@ Future<void> expectGoldenMatches(
   String? reason,
   double? tolerancePercentage,
 }) {
-  final goldenPath = path.join('goldens', goldenFileKey);
+  final goldenPath = 'goldens/$goldenFileKey';
   goldenFileComparator = GoldenDiffComparator(
-    path.join(
-      (goldenFileComparator as LocalFileComparator).basedir.toString(),
-      goldenFileKey,
-    ),
+    '${(goldenFileComparator as LocalFileComparator).basedir}/$goldenFileKey',
     tolerancePercentage: tolerancePercentage ?? 0.5,
   );
 
@@ -70,8 +67,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
-      await expectLater(
-          find.byType(MyApp), matchesGoldenFile('goldens/no_todos.png'));
+      await expectGoldenMatches(find.byType(MyApp), 'no_todos.png');
 
       // Tap the add button
       await tester.tap(find.byIcon(Icons.add));
@@ -110,8 +106,7 @@ void main() {
       await tester.tap(find.text('Show Done'));
       await tester.pumpAndSettle();
 
-      await expectLater(
-          find.byType(MyApp), matchesGoldenFile('goldens/two_todos.png'));
+      await expectGoldenMatches(find.byType(MyApp), 'two_todos.png');
     });
   });
 }
