@@ -68,7 +68,7 @@ void main() {
     test('should update the date when the date service updates', () {
       expect(viewModel.dateNotifier.value, DateTime(2024, 12, 1));
 
-      dateService.resetDate();
+      viewModel.resetDate();
 
       expect(viewModel.dateNotifier.value, DateTime(2022, 3, 17));
     });
