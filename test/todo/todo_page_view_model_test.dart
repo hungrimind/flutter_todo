@@ -1,16 +1,26 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_todo/date_service.dart';
 import 'package:flutter_todo/todo/todo_page_view_model.dart';
+
+class FakeDateService extends Fake implements DateService {
+  @override
+  ValueNotifier<DateTime> dateNotifier = ValueNotifier(DateTime(2024, 12, 1));
+
+  @override
+  void resetDate() {
+    dateNotifier.value = DateTime(2022, 3, 17);
+  }
+}
 
 void main() {
   group(TodoPageViewModel, () {
     late TodoPageViewModel viewModel;
     late DateService dateService;
-
     const todoTitle = 'Test Todo';
 
     setUp(() {
-      dateService = DateService();
+      dateService = FakeDateService();
       viewModel = TodoPageViewModel(dateService: dateService);
     });
 
@@ -53,6 +63,14 @@ void main() {
 
       viewModel.toggleShowCompletedTodos();
       expect(viewModel.showCompletedTodosNotifier.value, initialShowCompleted);
+    });
+
+    test('should update the date when the date service updates', () {
+      expect(viewModel.dateNotifier.value, DateTime(2024, 12, 1));
+
+      dateService.resetDate();
+
+      expect(viewModel.dateNotifier.value, DateTime(2022, 3, 17));
     });
   });
 }
