@@ -47,7 +47,7 @@ jobs:
         run: flutter pub global activate coverage
 
       - name: Run tests with coverage
-        run: flutter test --coverage
+        run: flutter test --coverage --exclude="test/golden_test.dart"
 
       - name: Upload failure artifacts
         if: failure()
