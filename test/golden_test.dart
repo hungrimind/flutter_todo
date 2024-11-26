@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_todo/main.dart';
-import 'package:flutter_todo/todo/todo_page.dart';
 import 'package:flutter_todo/utils/locator.dart';
 
 void main() {
@@ -24,7 +23,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the Add button in the dialog
-      await tester.tap(find.byKey(TodoPage.popupAddTodoKey));
+      await tester.tap(find.text('Add'));
       await tester.pumpAndSettle();
 
       // Find the checkbox and verify initial state
@@ -45,7 +44,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the Add button in the dialog
-      await tester.tap(find.byKey(TodoPage.popupAddTodoKey));
+      await tester.tap(find.text('Add'));
       await tester.pumpAndSettle();
 
       // Toggle the show completed todos

@@ -35,7 +35,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Tap the Add button in the dialog
-    await tester.tap(find.byKey(TodoPage.popupAddTodoKey));
+    await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();
 
     // Verify the todo was added
@@ -54,7 +54,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Test Todo');
-    await tester.tap(find.byKey(TodoPage.popupAddTodoKey));
+    await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();
 
     // Find the checkbox and verify initial state

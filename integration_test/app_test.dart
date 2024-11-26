@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_todo/main.dart';
-import 'package:flutter_todo/todo/todo_page.dart';
 import 'package:flutter_todo/utils/locator.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -26,14 +25,14 @@ void main() {
       await tester.tap(find.byIcon(Icons.add));
       await tester.pump();
       await tester.enterText(find.byType(TextField), 'First Todo');
-      await tester.tap(find.byKey(TodoPage.popupAddTodoKey));
+      await tester.tap(find.text('Add'));
       await tester.pump();
 
       // Add second todo
       await tester.tap(find.byIcon(Icons.add));
       await tester.pump();
       await tester.enterText(find.byType(TextField), 'Second Todo');
-      await tester.tap(find.byKey(TodoPage.popupAddTodoKey));
+      await tester.tap(find.text('Add'));
       await tester.pump();
 
       // Verify both todos are visible
@@ -49,7 +48,7 @@ void main() {
       expect(find.text('Second Todo'), findsOneWidget);
 
       // Show completed todos again
-      await tester.tap(find.byKey(TodoPage.toggleTodoKey));
+      await tester.tap(find.text('Show Done'));
       await tester.pump();
 
       // Verify both todos are visible again
