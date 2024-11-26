@@ -69,7 +69,7 @@ jobs:
 
       - uses: futureware-tech/simulator-action@v3
         with:
-          model: 'iPhone 14'
+          model: "iPhone 15"
 
       - uses: subosito/flutter-action@v2
         with:
