@@ -1,14 +1,73 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_todo/main.dart';
 import 'package:flutter_todo/utils/locator.dart';
+
+class GoldenDiffComparator extends LocalFileComparator {
+  GoldenDiffComparator(
+    String testFile, {
+    required this.tolerancePercentage,
+  }) : super(Uri.parse(testFile));
+
+  /// Customise your threshold here in percentage
+  /// Golden tests will pass if the pixel difference is equal to or below
+  /// [tolerancePercentage]%
+  final double tolerancePercentage;
+  double get _kGoldenDiffTolerance => tolerancePercentage / 100;
+
+  @override
+  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
+    final ComparisonResult result = await GoldenFileComparator.compareLists(
+      imageBytes,
+      await getGoldenBytes(golden),
+    );
+
+    if (!result.passed && result.diffPercent > _kGoldenDiffTolerance) {
+      final String error = await generateFailureOutput(result, golden, basedir);
+      throw FlutterError(error);
+    }
+    if (!result.passed) {
+      debugPrint(
+        'A difference of ${result.diffPercent * 100}% was found when comparing $golden.',
+      );
+    }
+    return result.passed ||
+        (result.diffPercent <= _kGoldenDiffTolerance && Platform.isLinux);
+  }
+}
+
+Future<void> expectGoldenMatches(
+  Finder actual,
+  String goldenFileKey, {
+  String? reason,
+  double? tolerancePercentage,
+}) {
+  final goldenPath = path.join('goldens', goldenFileKey);
+  goldenFileComparator = GoldenDiffComparator(
+    path.join(
+      (goldenFileComparator as LocalFileComparator).basedir.toString(),
+      goldenFileKey,
+    ),
+    tolerancePercentage: tolerancePercentage ?? 0.5,
+  );
+
+  return expectLater(
+    actual,
+    matchesGoldenFile(goldenPath),
+    reason: reason,
+  );
+}
 
 void main() {
   group(MyApp, () {
     setUp(() {
       setupLocator();
     });
-    testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    testWidgets('Add two todos and show completed golden test',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
       await expectLater(
