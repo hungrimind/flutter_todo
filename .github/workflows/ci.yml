@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: "3.24.5"
+
+jobs:
+  lint:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - run: flutter pub get
+      - run: dart analyze . --fatal-infos
+      - run: dart format $(find lib -name "*.dart" -not \( -name "*.*freezed.dart" -o -name "*.*g.dart" \) ) --set-exit-if-changed
+
+  unit_and_widget_tests:
+    needs: lint
+    name: Unit and Widget tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Install coverage package
+        run: flutter pub global activate coverage
+
+      - name: Run tests with coverage
+        run: flutter test --coverage --exclude-tags=golden 
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          file: coverage/lcov.info
+          fail_ci_if_error: false
+
+  golden_tests:
+    needs: lint
+    name: Golden tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Run golden tests
+        run: flutter test --tags=golden
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: golden-failure-artifacts
+          path: |
+            test/failures/
+            test/goldens/
+
+  integration_test:
+    needs: lint
+    name: Integration tests
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: futureware-tech/simulator-action@v3
+        with:
+          model: "iPhone 15"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - run: flutter pub get
+      - run: flutter test integration_test
