@@ -9,10 +9,11 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  FLUTTER_VERSION: "3.24.5"
+
 jobs:
   lint:
-    env:
-      FLUTTER_VERSION: "3.24.5"
     name: Lint and Format Check
     runs-on: ubuntu-latest
 
@@ -30,8 +31,6 @@ jobs:
 
   unit_and_widget_tests:
     needs: lint
-    env:
-      FLUTTER_VERSION: "3.24.5"
     name: Unit and Widget tests
     runs-on: ubuntu-latest
 
@@ -47,7 +46,31 @@ jobs:
         run: flutter pub global activate coverage
 
       - name: Run tests with coverage
-        run: flutter test --coverage $(find test -name "*.dart" ! -name "golden_test.dart")
+        run: flutter test --coverage --exclude-tags=golden 
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          file: coverage/lcov.info
+          fail_ci_if_error: false
+
+  golden_tests:
+    needs: lint
+    name: Golden tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Run golden tests
+        run: flutter test --tags=golden
 
       - name: Upload failure artifacts
         if: failure()
@@ -58,18 +81,8 @@ jobs:
             test/failures/
             test/goldens/
 
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        with:
-          file: coverage/lcov.info
-          fail_ci_if_error: false
-
   integration_test:
     needs: lint
-    env:
-      FLUTTER_VERSION: "3.24.5"
     name: Integration tests
     runs-on: macos-latest
 
