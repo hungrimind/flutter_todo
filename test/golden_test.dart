@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_todo/constants/tags.dart';
 import 'package:flutter_todo/date_service.dart';
 import 'package:flutter_todo/main.dart';
+import 'package:flutter_todo/todo/todo_page.dart';
 import 'package:flutter_todo/utils/locator.dart';
 
 void main() {
@@ -16,15 +18,17 @@ void main() {
       locator.reset();
     });
 
-    testWidgets('Initial empty state golden test', (WidgetTester tester) async {
-      await tester.pumpWidget(const MyApp());
+    testWidgets('Initial empty state golden test', tags: TestTag.golden,
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: TodoPage()));
+
       await expectLater(
-          find.byType(MyApp), matchesGoldenFile('goldens/no_todos.png'));
+          find.byType(TodoPage), matchesGoldenFile('goldens/no_todos.png'));
     });
 
     testWidgets('Two todos with completed item shown golden test',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(const MyApp());
+        tags: TestTag.golden, (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: TodoPage()));
 
       // Add first todo and mark as complete
       await tester.tap(find.byIcon(Icons.add));
@@ -51,7 +55,7 @@ void main() {
       await tester.pumpAndSettle();
 
       await expectLater(
-          find.byType(MyApp), matchesGoldenFile('goldens/two_todos.png'));
+          find.byType(TodoPage), matchesGoldenFile('goldens/two_todos.png'));
     });
   });
 }
