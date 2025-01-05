@@ -5,7 +5,12 @@ import 'package:uuid/uuid.dart';
 import 'todo.dart';
 
 class TodoPageViewModel {
-  TodoPageViewModel();
+  TodoPageViewModel({required DateService dateService})
+      : _dateService = dateService;
+
+  final DateService _dateService;
+
+  ValueNotifier<DateTime> get dateNotifier => _dateService.dateNotifier;
 
   final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
 
@@ -25,5 +30,8 @@ class TodoPageViewModel {
     todosNotifier.value = todosNotifier.value
         .map((t) => t.id == todo.id ? t.copyWith(completed: !t.completed) : t)
         .toList();
+  }
+
+  void resetDate() {
   }
 }
