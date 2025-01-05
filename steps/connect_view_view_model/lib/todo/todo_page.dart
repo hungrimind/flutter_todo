@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:demo/utils/locator.dart';
 
 import 'todo_page_view_model.dart';
 
