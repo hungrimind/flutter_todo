@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_todo/todo/todo.dart';
+import 'package:demo/todo/todo.dart';
 
 void main() {
   group('Todo', () {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todo/todo/todo.dart';
+import 'package:demo/todo/todo.dart';
 import 'package:uuid/uuid.dart';
 
 import 'todo_page_view_model.dart';
