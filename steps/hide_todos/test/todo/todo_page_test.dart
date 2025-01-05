@@ -1,9 +1,21 @@
+import 'package:demo/date_service.dart';
 import 'package:demo/todo/todo.dart';
 import 'package:demo/todo/todo_page.dart';
+import 'package:demo/utils/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  setUp(() {
+    // Register the DateService can be a fake if needed
+    locator.registerSingleton(DateService());
+  });
+
+  tearDown(() {
+    // Reset the GetIt instance before each test
+    locator.reset();
+  });
+
   testWidgets('should add a todo when using the add button',
       (WidgetTester tester) async {
     await tester.pumpWidget(
@@ -79,6 +91,35 @@ void main() {
       find.byType(ListView),
       findsOneWidget,
       reason: 'ValueListenableBuilder should contain ListView to display todos',
+    );
+  });
+
+  testWidgets('TodoPage uses ValueListenableBuilder with dateNotifier',
+      (WidgetTester tester) async {
+    // Arrange
+    await tester.pumpWidget(const MaterialApp(home: TodoPage()));
+
+    // Assert
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is ValueListenableBuilder && 
+                    widget.valueListenable is ValueNotifier<DateTime>,
+      ),
+      findsOneWidget,
+      reason: 'TodoPage should use ValueListenableBuilder to listen to date changes from the notifier',
+    );
+
+    // Verify the date display is in AppBar
+    expect(
+      find.ancestor(
+        of: find.byWidgetPredicate(
+          (widget) => widget is ValueListenableBuilder &&
+                      widget.valueListenable is ValueNotifier<DateTime>,
+        ),
+        matching: find.byType(AppBar),
+      ),
+      findsOneWidget,
+      reason: 'Date ValueListenableBuilder should be within AppBar',
     );
   });
 }
