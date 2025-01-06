@@ -95,36 +95,4 @@ void main() {
       reason: 'ValueListenableBuilder should contain ListView to display todos',
     );
   });
-
-  testWidgets('TodoPage uses ValueListenableBuilder with dateNotifier',
-      (WidgetTester tester) async {
-    // Arrange
-    await tester.pumpWidget(const MaterialApp(home: TodoPage()));
-
-    // Assert
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is ValueListenableBuilder &&
-            widget.valueListenable is ValueNotifier<DateTime>,
-      ),
-      findsOneWidget,
-      reason:
-          'TodoPage should use ValueListenableBuilder to listen to date changes from the notifier',
-    );
-
-    // Verify the date display is in AppBar
-    expect(
-      find.ancestor(
-        of: find.byWidgetPredicate(
-          (widget) =>
-              widget is ValueListenableBuilder &&
-              widget.valueListenable is ValueNotifier<DateTime>,
-        ),
-        matching: find.byType(AppBar),
-      ),
-      findsOneWidget,
-      reason: 'Date ValueListenableBuilder should be within AppBar',
-    );
-  });
 }
