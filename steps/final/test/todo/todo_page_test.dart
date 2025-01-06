@@ -94,7 +94,7 @@ void main() {
     );
   });
 
-  testWidgets('should toggle todo completion status',
+  testWidgets('should toggle visibility of completed todos', 
       (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
@@ -102,23 +102,46 @@ void main() {
       ),
     );
 
-    // Add a todo
+    // Add first todo
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'Test Todo');
+    await tester.enterText(find.byType(TextField), 'Todo 1');
     await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();
 
-    // Find the checkbox and verify initial state
-    final checkbox = find.byType(Checkbox);
-    expect(checkbox, findsOneWidget);
-    expect(tester.widget<Checkbox>(checkbox).value, false);
-
-    // Tap the checkbox
-    await tester.tap(checkbox);
+    // Add second todo
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Todo 2');
+    await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();
 
-    // Verify the checkbox is no longer rendered after completion
-    expect(checkbox, findsNothing);
+    // Verify both todos are visible
+    expect(find.text('Todo 1'), findsOneWidget);
+    expect(find.text('Todo 2'), findsOneWidget);
+
+    // Complete first todo
+    await tester.tap(find.byType(Checkbox).first);
+    await tester.pumpAndSettle();
+
+    // Verify completed todo is hidden by default
+    expect(find.text('Todo 1'), findsNothing);
+    expect(find.text('Todo 2'), findsOneWidget);
+
+    // Show completed todos
+    await tester.tap(find.text('Show Done'));
+    await tester.pumpAndSettle();
+
+    // Verify both todos are visible again
+    expect(find.text('Todo 1'), findsOneWidget);
+    expect(find.text('Todo 2'), findsOneWidget);
+
+    // Hide completed todos
+    await tester.tap(find.text('Hide Done'));
+    await tester.pumpAndSettle();
+
+    // Verify completed todo is hidden again
+    expect(find.text('Todo 1'), findsNothing);
+    expect(find.text('Todo 2'), findsOneWidget);
   });
 }
