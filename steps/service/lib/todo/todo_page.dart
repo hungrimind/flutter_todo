@@ -12,7 +12,7 @@ class TodoPage extends StatefulWidget {
 }
 
 class _TodoPageState extends State<TodoPage> {
-  final TodoPageViewModel _todoPageViewModel = TodoPageViewModel(dateService: locator<DateService>());
+  final TodoPageViewModel _todoPageViewModel = TodoPageViewModel();
 
   final TextEditingController _todoController = TextEditingController();
 
