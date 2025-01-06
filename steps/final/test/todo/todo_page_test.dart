@@ -2,6 +2,7 @@ import 'package:demo/date_service.dart';
 import 'package:demo/todo/todo.dart';
 import 'package:demo/todo/todo_page.dart';
 import 'package:demo/utils/locator.dart';
+import 'package:demo/utils/valuelistenablebuilder3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -71,7 +72,7 @@ void main() {
     expect(checkbox, findsNothing);
   });
 
-  testWidgets('TodoPage uses ValueListenableBuilder with ViewModel',
+  testWidgets('TodoPage uses ValueListenableBuilder3 with all notifiers',
       (WidgetTester tester) async {
     // Arrange
     await tester.pumpWidget(const MaterialApp(home: TodoPage()));
@@ -79,47 +80,17 @@ void main() {
     // Assert
     expect(
       find.byWidgetPredicate(
-        (widget) => widget is ValueListenableBuilder && 
-                    widget.valueListenable is ValueNotifier<List<Todo>>,
+        (widget) => widget is ValueListenableBuilder3<bool, DateTime, List<Todo>>,
       ),
       findsOneWidget,
-      reason: 'TodoPage should use ValueListenableBuilder to listen to ViewModel changes from the notifier',
+      reason: 'TodoPage should use ValueListenableBuilder3 to listen to all notifier changes',
     );
 
     // Verify ListView.builder exists
     expect(
       find.byType(ListView),
       findsOneWidget,
-      reason: 'ValueListenableBuilder should contain ListView to display todos',
-    );
-  });
-
-  testWidgets('TodoPage uses ValueListenableBuilder with dateNotifier',
-      (WidgetTester tester) async {
-    // Arrange
-    await tester.pumpWidget(const MaterialApp(home: TodoPage()));
-
-    // Assert
-    expect(
-      find.byWidgetPredicate(
-        (widget) => widget is ValueListenableBuilder && 
-                    widget.valueListenable is ValueNotifier<DateTime>,
-      ),
-      findsOneWidget,
-      reason: 'TodoPage should use ValueListenableBuilder to listen to date changes from the notifier',
-    );
-
-    // Verify the date display is in AppBar
-    expect(
-      find.ancestor(
-        of: find.byWidgetPredicate(
-          (widget) => widget is ValueListenableBuilder &&
-                      widget.valueListenable is ValueNotifier<DateTime>,
-        ),
-        matching: find.byType(AppBar),
-      ),
-      findsOneWidget,
-      reason: 'Date ValueListenableBuilder should be within AppBar',
+      reason: 'ValueListenableBuilder3 should contain ListView to display todos',
     );
   });
 
