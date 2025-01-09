@@ -1,5 +1,5 @@
-import 'package:demo/date_service.dart';
 import 'package:flutter/material.dart';
+import 'package:demo/date_service.dart';
 import 'package:uuid/uuid.dart';
 
 import 'todo.dart';
@@ -33,6 +33,6 @@ class TodoPageViewModel {
   }
 
   void resetDate() {
-    _dateService.resetDate();
+    // TODO: call _dateService 
   }
 }
