@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:demo/date_service.dart';
+import 'package:demo/utils/locator.dart';
 
 import 'todo_page_view_model.dart';
 
@@ -10,7 +12,9 @@ class TodoPage extends StatefulWidget {
 }
 
 class _TodoPageState extends State<TodoPage> {
-  final TodoPageViewModel _todoPageViewModel = TodoPageViewModel();
+  final TodoPageViewModel _todoPageViewModel = TodoPageViewModel(
+    dateService: locator<DateService>(),
+  );
 
   final TextEditingController _todoController = TextEditingController();
 
