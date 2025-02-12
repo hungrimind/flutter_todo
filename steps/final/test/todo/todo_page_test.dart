@@ -80,21 +80,24 @@ void main() {
     // Assert
     expect(
       find.byWidgetPredicate(
-        (widget) => widget is ValueListenableBuilder3<bool, DateTime, List<Todo>>,
+        (widget) =>
+            widget is ValueListenableBuilder3<bool, DateTime, List<Todo>>,
       ),
       findsOneWidget,
-      reason: 'TodoPage should use ValueListenableBuilder3 to listen to all notifier changes',
+      reason:
+          'TodoPage should use ValueListenableBuilder3 to listen to all notifier changes',
     );
 
     // Verify ListView.builder exists
     expect(
       find.byType(ListView),
       findsOneWidget,
-      reason: 'ValueListenableBuilder3 should contain ListView to display todos',
+      reason:
+          'ValueListenableBuilder3 should contain ListView to display todos',
     );
   });
 
-  testWidgets('should toggle visibility of completed todos', 
+  testWidgets('should toggle visibility of completed todos',
       (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(

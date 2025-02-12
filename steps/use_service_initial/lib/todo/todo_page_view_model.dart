@@ -33,6 +33,6 @@ class TodoPageViewModel {
   }
 
   void resetDate() {
-    // TODO: call _dateService 
+    // TODO: call _dateService
   }
 }

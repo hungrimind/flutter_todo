@@ -32,7 +32,10 @@ class _TodoPageState extends State<TodoPage> {
           TextButton(
             onPressed: () {
               setState(() {
-                todos.add(Todo(id: const Uuid().v4(), title: _todoController.text, completed: false));
+                todos.add(Todo(
+                    id: const Uuid().v4(),
+                    title: _todoController.text,
+                    completed: false));
               });
               _todoController.clear();
               Navigator.pop(context);
@@ -54,11 +57,11 @@ class _TodoPageState extends State<TodoPage> {
         itemCount: todos.length,
         itemBuilder: (context, index) {
           final todo = todos[index];
-          
+
           if (todo.completed) {
             return const SizedBox();
           }
-          
+
           return ListTile(
             title: Text(todo.title),
             trailing: Checkbox(

@@ -67,11 +67,13 @@ void main() {
     // Assert
     expect(
       find.byWidgetPredicate(
-        (widget) => widget is ValueListenableBuilder && 
-                    widget.valueListenable is ValueNotifier<List<Todo>>,
+        (widget) =>
+            widget is ValueListenableBuilder &&
+            widget.valueListenable is ValueNotifier<List<Todo>>,
       ),
       findsOneWidget,
-      reason: 'TodoPage should use ValueListenableBuilder to listen to ViewModel changes from the notifier',
+      reason:
+          'TodoPage should use ValueListenableBuilder to listen to ViewModel changes from the notifier',
     );
 
     // Verify ListView.builder exists
