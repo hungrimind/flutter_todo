@@ -8,7 +8,7 @@ on:
       - main
   workflow_dispatch:
 env:
-  FLUTTER_VERSION: "3.27.3"
+  FLUTTER_VERSION: "3.29.0"
 jobs:
   lint:
     name: Lint and Format Check
@@ -19,7 +19,7 @@ jobs:
         with:
           channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          
+
       - name: Run lint and format check
         run: make ci-lint
 
@@ -33,7 +33,7 @@ jobs:
         with:
           channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          
+
       - name: Run tests
         run: make ci-test
 
@@ -47,6 +47,6 @@ jobs:
         with:
           channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          
+
       - name: Build web
         run: make ci-build
