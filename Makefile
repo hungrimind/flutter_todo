@@ -38,12 +38,22 @@ analyze-all:
 		cd $$d && dart analyze . --no-fatal-warnings && cd -; \
 	done
 
+.PHONY: build-web-all
+build-web-all:
+	@for d in $(STEP_DIRS); do \
+		echo "=== Building web for $$d ==="; \
+		cd $$d && flutter build web && cd -; \
+	done
+
 # CI commands
 .PHONY: ci-lint
 ci-lint: get-all analyze-all format-check
 
 .PHONY: ci-test
 ci-test: get-all test-all
+
+.PHONY: ci-build
+ci-build: get-all build-web-all
 
 # Run all checks (useful for pre-commit)
 .PHONY: check-all
@@ -53,12 +63,13 @@ check-all: get-all format analyze-all test-all
 .PHONY: help
 help:
 	@echo "Available commands:"
-	@echo "  make get-all      - Get dependencies for all step projects"
-	@echo "  make test-all     - Run tests for all step projects"
-	@echo "  make format       - Format code in all step projects"
-	@echo "  make format-check - Check if code is properly formatted (used in CI)"
-	@echo "  make analyze-all  - Analyze code in all step projects"
-	@echo "  make ci-lint      - Run all lint-related checks (used in CI)"
-	@echo "  make ci-test      - Run all tests (used in CI)"
-	@echo "  make check-all    - Run all checks locally"
-	@echo "  make help         - Show this help message"
+	@echo "  make get-all          - Get dependencies for all step projects"
+	@echo "  make test-all         - Run tests for all step projects"
+	@echo "  make format           - Format code in all step projects"
+	@echo "  make format-check     - Check if code is properly formatted (used in CI)"
+	@echo "  make analyze-all      - Analyze code in all step projects"
+	@echo "  make build-web-all    - Build web for all step projects"
+	@echo "  make ci-lint          - Run all lint-related checks (used in CI)"
+	@echo "  make ci-test          - Run all tests (used in CI)"
+	@echo "  make check-all        - Run all checks locally"
+	@echo "  make help             - Show this help message"

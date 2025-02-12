@@ -36,3 +36,17 @@ jobs:
           
       - name: Run tests
         run: make ci-test
+
+  build_web:
+    needs: unit_and_widget_tests
+    name: Build Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          
+      - name: Build web
+        run: make ci-build
