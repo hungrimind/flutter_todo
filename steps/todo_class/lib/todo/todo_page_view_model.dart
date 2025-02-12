@@ -8,15 +8,9 @@ class TodoPageViewModel {
 
   final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
 
-  void add(String title) {
+  void add(String title) {}
 
-  }
+  void remove(Todo todo) {}
 
-  void remove(Todo todo) {
-
-  }
-
-  void toggleDone(Todo todo) {
-
-  }
+  void toggleDone(Todo todo) {}
 }

@@ -11,7 +11,8 @@ void main() {
     test('setupLocator registers DateService correctly', () {
       setupLocator();
 
-      expect(locator.isRegistered<DateService>(), true, reason: 'DateService should be registered');
+      expect(locator.isRegistered<DateService>(), true,
+          reason: 'DateService should be registered');
     });
   });
 }
