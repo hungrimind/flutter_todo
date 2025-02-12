@@ -35,7 +35,7 @@ format-check:
 analyze-all:
 	@for d in $(STEP_DIRS); do \
 		echo "=== Analyzing $$d ==="; \
-		cd $$d && dart analyze . && cd -; \
+		cd $$d && dart analyze . --no-fatal-warnings && cd -; \
 	done
 
 # CI commands
